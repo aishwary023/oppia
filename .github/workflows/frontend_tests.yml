@@ -31,6 +31,7 @@ jobs:
         run: PYTHONIOENCODING=utf-8 python -m scripts.run_frontend_tests --run_minified_tests --skip_install --check_coverage
       - name: Uploading karma coverage report as Artifacts
         uses: actions/upload-artifact@v2
+        if: failure()
         with:
           name: karma-coverage-report
           path: /home/runner/work/oppia/karma_coverage_reports
