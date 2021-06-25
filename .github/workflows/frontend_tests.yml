@@ -34,4 +34,4 @@ jobs:
         if: failure()
         with:
           name: karma-coverage-report
-          path: /home/runner/work/karma_coverage_reports
+          path: /home/runner/work/karma_coverage_reports/core/templates/components/common-layout-directives/navigation-bars/top-navigation-bar.component.ts.html
