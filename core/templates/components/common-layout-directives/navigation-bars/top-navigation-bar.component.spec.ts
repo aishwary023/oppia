@@ -76,8 +76,8 @@ describe('TopNavigationBarComponent', () => {
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
 
-  let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
-  let mockResizeEmitter = new EventEmitter();
+  let mockOnSearchBarLoadedEventEmitter: EventEmitter<void>;
+  let mockResizeEmitter: EventEmitter<void>;
 
   let userInfo = {
     _isModerator: true,
@@ -101,7 +101,9 @@ describe('TopNavigationBarComponent', () => {
   };
 
   beforeEach(waitForAsync(() => {
+    mockResizeEmitter = new EventEmitter();
     mockWindowRef = new MockWindowRef();
+
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule
@@ -144,8 +146,11 @@ describe('TopNavigationBarComponent', () => {
     sidebarStatusService = TestBed.inject(SidebarStatusService);
 
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
-    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
-      mockOnSearchBarLoadedEventEmitter);
+    spyOn(debouncerService, 'debounce').and.stub();
+  });
+
+  afterAll(() => {
+    component.ngOnDestroy();
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
@@ -209,6 +214,10 @@ describe('TopNavigationBarComponent', () => {
   }));
 
   it('should truncate navbar after search bar is loaded', (done) => {
+    mockOnSearchBarLoadedEventEmitter = new EventEmitter();
+    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
+      mockOnSearchBarLoadedEventEmitter);
+
     spyOn(component, 'truncateNavbar');
 
     component.ngOnInit();
@@ -223,19 +232,18 @@ describe('TopNavigationBarComponent', () => {
   });
 
   it('should try displaying the hidden navbar elements if resized' +
-    ' window is larger', waitForAsync(() => {
+    ' window is larger', fakeAsync(() => {
     let donateElement = 'I18N_TOPNAV_DONATE';
     component.ngOnInit();
-    spyOn(debouncerService, 'debounce').and.stub();
 
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
 
     mockResizeEmitter.emit();
+    tick();
 
-    fixture.whenStable().then(() => {
-      expect(component.navElementsVisibilityStatus[donateElement]).toBe(true);
-    });
+    expect(component.navElementsVisibilityStatus[donateElement]).toBe(true);
+
     component.ngOnDestroy();
   }));
 
