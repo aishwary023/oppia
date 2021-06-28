@@ -148,6 +148,7 @@ describe('TopNavigationBarComponent', () => {
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
     spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
       mockOnSearchBarLoadedEventEmitter);
+
   });
 
   afterEach(() => {
@@ -185,7 +186,6 @@ describe('TopNavigationBarComponent', () => {
       I18N_TOPNAV_LIBRARY: true
     });
 
-    component.ngOnDestroy();
   }));
 
   it('should get user info on initialization', fakeAsync(() => {
@@ -211,7 +211,6 @@ describe('TopNavigationBarComponent', () => {
     expect(component.username).toBe('username1');
     expect(component.profilePageUrl).toBe('/profile/username1');
 
-    component.ngOnDestroy();
   }));
 
   it('should truncate navbar after search bar is loaded', (done) => {
@@ -225,7 +224,6 @@ describe('TopNavigationBarComponent', () => {
       done();
     }, 100);
 
-    component.ngOnDestroy();
   });
 
   it('should try displaying the hidden navbar elements if resized' +
@@ -243,7 +241,6 @@ describe('TopNavigationBarComponent', () => {
       fixture.detectChanges();
       expect(component.navElementsVisibilityStatus[donateElement]).toBe(true);
     });
-    component.ngOnDestroy();
   }));
 
   it('should show user\'s profile picture on initialization', fakeAsync(() => {
@@ -255,7 +252,6 @@ describe('TopNavigationBarComponent', () => {
     tick();
 
     expect(component.profilePictureDataUrl).toBe('/profile-picture/user1.jpg');
-    component.ngOnDestroy();
   }));
 
   it('should show Oppia\'s logos', () => {
@@ -459,6 +455,5 @@ describe('TopNavigationBarComponent', () => {
 
     expect(component.navElementsVisibilityStatus[donateElement])
       .toBe(false);
-    component.ngOnDestroy();
   });
 });
