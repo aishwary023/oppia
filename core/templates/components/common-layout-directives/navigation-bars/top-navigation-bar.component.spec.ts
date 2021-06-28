@@ -76,7 +76,6 @@ describe('TopNavigationBarComponent', () => {
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
 
-  let mockOnSearchBarLoadedEventEmitter: EventEmitter<void>;
   let mockResizeEmitter: EventEmitter<void>;
 
   let userInfo = {
@@ -145,7 +144,6 @@ describe('TopNavigationBarComponent', () => {
     debouncerService = TestBed.inject(DebouncerService);
     sidebarStatusService = TestBed.inject(SidebarStatusService);
 
-    spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
     spyOn(debouncerService, 'debounce').and.stub();
   });
 
@@ -187,6 +185,7 @@ describe('TopNavigationBarComponent', () => {
   }));
 
   it('should get user info on initialization', fakeAsync(() => {
+    spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
 
@@ -212,7 +211,7 @@ describe('TopNavigationBarComponent', () => {
   }));
 
   it('should truncate navbar after search bar is loaded', (done) => {
-    mockOnSearchBarLoadedEventEmitter = new EventEmitter();
+    let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
     spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
       mockOnSearchBarLoadedEventEmitter);
 
@@ -263,13 +262,12 @@ describe('TopNavigationBarComponent', () => {
   });
 
   it('should fetch login URL and redirect user to login page when user' +
-    ' clicks on \'Sign In\'', fakeAsync((done) => {
+    ' clicks on \'Sign In\'', fakeAsync(() => {
     spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
 
     expect(mockWindowRef.nativeWindow.location.href).toBe('');
 
     component.onLoginButtonClicked();
-    flushMicrotasks();
     tick(151);
 
     expect(mockWindowRef.nativeWindow.location.href).toBe('/login/url');
@@ -282,7 +280,6 @@ describe('TopNavigationBarComponent', () => {
     expect(mockWindowRef.nativeWindow.location.href).toBe('');
 
     component.onLoginButtonClicked();
-    flushMicrotasks();
     tick(151);
 
     expect(mockWindowRef.nativeWindow.location.reload).toHaveBeenCalled();
@@ -294,7 +291,6 @@ describe('TopNavigationBarComponent', () => {
     spyOn(siteAnalyticsService, 'registerStartLoginEvent');
 
     component.onLoginButtonClicked();
-    flushMicrotasks();
     tick(151);
 
     expect(siteAnalyticsService.registerStartLoginEvent).toHaveBeenCalledWith(
@@ -376,7 +372,6 @@ describe('TopNavigationBarComponent', () => {
 
     component.navigateToClassroomPage('/classroom/url');
     tick(151);
-    flushMicrotasks();
 
     expect(mockWindowRef.nativeWindow.location.href).toBe('/classroom/url');
   }));
