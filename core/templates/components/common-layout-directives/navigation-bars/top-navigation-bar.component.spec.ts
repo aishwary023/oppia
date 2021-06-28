@@ -143,6 +143,10 @@ describe('TopNavigationBarComponent', () => {
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
   });
 
+  afterEach(() => {
+    component.ngOnDestroy();
+  });
+
   it('should set component properties on initialization', fakeAsync(() => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
@@ -174,7 +178,6 @@ describe('TopNavigationBarComponent', () => {
       I18N_CREATE_EXPLORATION_CREATE: true,
       I18N_TOPNAV_LIBRARY: true
     });
-
   }));
 
   it('should get user info on initialization', fakeAsync(() => {
@@ -201,7 +204,6 @@ describe('TopNavigationBarComponent', () => {
     expect(component.userIsLoggedIn).toBe(true);
     expect(component.username).toBe('username1');
     expect(component.profilePageUrl).toBe('/profile/username1');
-
   }));
 
   it('should truncate navbar after search bar is loaded', (done) => {
@@ -262,7 +264,7 @@ describe('TopNavigationBarComponent', () => {
   });
 
   it('should fetch login URL and redirect user to login page when user' +
-    ' clicks on \'Sign In\'', fakeAsync((done) => {
+    ' clicks on \'Sign In\'', fakeAsync(() => {
     spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
 
     expect(mockWindowRef.nativeWindow.location.href).toBe('');
