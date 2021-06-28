@@ -62,7 +62,7 @@ class MockWindowRef {
   }
 }
 
-describe('TopNavigationBarComponent', () => {
+fdescribe('TopNavigationBarComponent', () => {
   let fixture: ComponentFixture<TopNavigationBarComponent>;
   let component: TopNavigationBarComponent;
   let mockWindowRef: MockWindowRef;
@@ -149,10 +149,6 @@ describe('TopNavigationBarComponent', () => {
     spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
       mockOnSearchBarLoadedEventEmitter);
 
-  });
-
-  afterEach(() => {
-    component.ngOnDestroy();
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
@@ -455,5 +451,16 @@ describe('TopNavigationBarComponent', () => {
 
     expect(component.navElementsVisibilityStatus[donateElement])
       .toBe(false);
+  });
+
+  it('should unsubscribe when component is destroyed', function() {
+    spyOn(component.directiveSubscriptions, 'unsubscribe').and.callThrough();
+
+    expect(component.directiveSubscriptions.closed).toBe(false);
+
+    component.ngOnDestroy();
+
+    expect(component.directiveSubscriptions.unsubscribe).toHaveBeenCalled();
+    expect(component.directiveSubscriptions.closed).toBe(true);
   });
 });
