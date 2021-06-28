@@ -62,7 +62,7 @@ class MockWindowRef {
   }
 }
 
-describe('TopNavigationBarComponent', () => {
+fdescribe('TopNavigationBarComponent', () => {
   let fixture: ComponentFixture<TopNavigationBarComponent>;
   let component: TopNavigationBarComponent;
   let mockWindowRef: MockWindowRef;
@@ -76,7 +76,6 @@ describe('TopNavigationBarComponent', () => {
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
 
-  let mockOnSearchBarLoadedEventEmitter: EventEmitter<void>;
   let mockResizeEmitter: EventEmitter<void>;
 
   let userInfo = {
@@ -101,7 +100,6 @@ describe('TopNavigationBarComponent', () => {
   };
 
   beforeEach(waitForAsync(() => {
-    mockOnSearchBarLoadedEventEmitter = new EventEmitter();
     mockResizeEmitter = new EventEmitter();
     mockWindowRef = new MockWindowRef();
     TestBed.configureTestingModule({
@@ -146,10 +144,9 @@ describe('TopNavigationBarComponent', () => {
     sidebarStatusService = TestBed.inject(SidebarStatusService);
 
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
-    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
-      mockOnSearchBarLoadedEventEmitter);
-
   });
+
+  afterEach
 
   it('should set component properties on initialization', fakeAsync(() => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
@@ -210,6 +207,9 @@ describe('TopNavigationBarComponent', () => {
   }));
 
   it('should truncate navbar after search bar is loaded', (done) => {
+    let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
+    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
+      mockOnSearchBarLoadedEventEmitter);
     spyOn(component, 'truncateNavbar');
 
     component.ngOnInit();
