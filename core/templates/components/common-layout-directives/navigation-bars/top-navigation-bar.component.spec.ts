@@ -146,7 +146,9 @@ fdescribe('TopNavigationBarComponent', () => {
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
   });
 
-  afterEach
+  afterEach(() => {
+    component.ngOnDestroy();
+  });
 
   it('should set component properties on initialization', fakeAsync(() => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
