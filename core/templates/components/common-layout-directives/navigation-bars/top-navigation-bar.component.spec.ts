@@ -76,8 +76,6 @@ describe('TopNavigationBarComponent', () => {
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
 
-  let mockResizeEmitter: EventEmitter<void>;
-
   let userInfo = {
     _isModerator: true,
     _isAdmin: true,
@@ -100,7 +98,6 @@ describe('TopNavigationBarComponent', () => {
   };
 
   beforeEach(waitForAsync(() => {
-    mockResizeEmitter = new EventEmitter();
     mockWindowRef = new MockWindowRef();
     TestBed.configureTestingModule({
       imports: [
@@ -121,7 +118,7 @@ describe('TopNavigationBarComponent', () => {
           provide: WindowDimensionsService,
           useValue: {
             getWidth: () => 700,
-            getResizeEvent: () => mockResizeEmitter,
+            getResizeEvent: () => new EventEmitter(),
             isWindowNarrow: () => false
           }
         }
@@ -144,10 +141,6 @@ describe('TopNavigationBarComponent', () => {
     sidebarStatusService = TestBed.inject(SidebarStatusService);
 
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
-  });
-
-  afterEach(() => {
-    component.ngOnDestroy();
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
@@ -230,6 +223,8 @@ describe('TopNavigationBarComponent', () => {
   it('should try displaying the hidden navbar elements if resized' +
     ' window is larger', waitForAsync(() => {
     let donateElement = 'I18N_TOPNAV_DONATE';
+    let mockResizeEmitter = new EventEmitter();
+    spyOn(wds, 'getResizeEvent').and.returnValue(mockResizeEmitter);
     spyOn(component, 'truncateNavbar').and.stub();
     spyOn(debouncerService, 'debounce').and.stub();
 
