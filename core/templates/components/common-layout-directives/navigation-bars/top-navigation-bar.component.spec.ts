@@ -32,6 +32,7 @@ import { MockTranslatePipe } from 'tests/unit-test-utils';
 import { TopNavigationBarComponent } from './top-navigation-bar.component';
 import { DebouncerService } from 'services/debouncer.service';
 import { SidebarStatusService } from 'services/sidebar-status.service';
+import { UrlInterpolationService } from 'domain/utilities/url-interpolation.service';
 
 class MockWindowRef {
   _window = {
@@ -75,6 +76,7 @@ describe('TopNavigationBarComponent', () => {
   let deviceInfoService: DeviceInfoService;
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
+  let urlInterpolationService: UrlInterpolationService;
 
   let mockResizeEmitter: EventEmitter<void>;
 
@@ -143,6 +145,7 @@ describe('TopNavigationBarComponent', () => {
     deviceInfoService = TestBed.inject(DeviceInfoService);
     debouncerService = TestBed.inject(DebouncerService);
     sidebarStatusService = TestBed.inject(SidebarStatusService);
+    urlInterpolationService = TestBed.inject(UrlInterpolationService);
 
     spyOn(debouncerService, 'debounce').and.stub();
   });
@@ -188,6 +191,9 @@ describe('TopNavigationBarComponent', () => {
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
+    spyOn(urlInterpolationService, 'interpolateUrl').and.returnValue(
+      '/profile/username1'
+    );
 
     expect(component.isModerator).toBe(undefined);
     expect(component.isAdmin).toBe(undefined);
