@@ -76,9 +76,6 @@ describe('TopNavigationBarComponent', () => {
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
 
-  let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
-  let mockResizeEmitter = new EventEmitter();
-
   let userInfo = {
     _isModerator: true,
     _isAdmin: true,
@@ -121,7 +118,7 @@ describe('TopNavigationBarComponent', () => {
           provide: WindowDimensionsService,
           useValue: {
             getWidth: () => 700,
-            getResizeEvent: () => mockResizeEmitter,
+            getResizeEvent: () => new EventEmitter(),
             isWindowNarrow: () => false
           }
         }
@@ -144,14 +141,17 @@ describe('TopNavigationBarComponent', () => {
     sidebarStatusService = TestBed.inject(SidebarStatusService);
 
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
-    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
-      mockOnSearchBarLoadedEventEmitter);
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
     spyOn(wds, 'isWindowNarrow').and.returnValue(true);
+    spyOn(component, 'truncateNavbar').and.stub();
 
     expect(component.currentUrl).toBe(undefined);
     expect(component.labelForClearingFocus).toBe(undefined);
@@ -178,13 +178,13 @@ describe('TopNavigationBarComponent', () => {
       I18N_CREATE_EXPLORATION_CREATE: true,
       I18N_TOPNAV_LIBRARY: true
     });
-
-    component.ngOnDestroy();
   }));
 
   it('should get user info on initialization', fakeAsync(() => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
+    spyOn(component, 'truncateNavbar').and.stub();
+
 
     expect(component.isModerator).toBe(undefined);
     expect(component.isAdmin).toBe(undefined);
@@ -204,12 +204,13 @@ describe('TopNavigationBarComponent', () => {
     expect(component.userIsLoggedIn).toBe(true);
     expect(component.username).toBe('username1');
     expect(component.profilePageUrl).toBe('/profile/username1');
-
-    component.ngOnDestroy();
   }));
 
   it('should truncate navbar after search bar is loaded', (done) => {
-    spyOn(component, 'truncateNavbar');
+    let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
+    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
+      mockOnSearchBarLoadedEventEmitter);
+    spyOn(component, 'truncateNavbar').and.stub();
 
     component.ngOnInit();
     mockOnSearchBarLoadedEventEmitter.emit();
@@ -219,14 +220,17 @@ describe('TopNavigationBarComponent', () => {
       done();
     }, 100);
 
-    component.ngOnDestroy();
   });
 
   it('should try displaying the hidden navbar elements if resized' +
     ' window is larger', waitForAsync(() => {
     let donateElement = 'I18N_TOPNAV_DONATE';
-    component.ngOnInit();
+    let mockResizeEmitter = new EventEmitter();
+    spyOn(wds, 'getResizeEvent').and.returnValue(mockResizeEmitter);
+    spyOn(component, 'truncateNavbar').and.stub();
     spyOn(debouncerService, 'debounce').and.stub();
+
+    component.ngOnInit();
 
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
@@ -234,22 +238,21 @@ describe('TopNavigationBarComponent', () => {
     mockResizeEmitter.emit();
 
     fixture.whenStable().then(() => {
-      fixture.detectChanges();
       expect(component.navElementsVisibilityStatus[donateElement]).toBe(true);
     });
-    component.ngOnDestroy();
   }));
 
   it('should show user\'s profile picture on initialization', fakeAsync(() => {
     expect(component.profilePictureDataUrl).toBe(undefined);
+
     spyOn(userService, 'getProfileImageDataUrlAsync').and.resolveTo(
       '/profile-picture/user1.jpg');
+    spyOn(debouncerService, 'debounce').and.stub();
 
     component.ngOnInit();
     tick();
 
     expect(component.profilePictureDataUrl).toBe('/profile-picture/user1.jpg');
-    component.ngOnDestroy();
   }));
 
   it('should show Oppia\'s logos', () => {
@@ -261,7 +264,7 @@ describe('TopNavigationBarComponent', () => {
   });
 
   it('should fetch login URL and redirect user to login page when user' +
-    ' clicks on \'Sign In\'', fakeAsync((done) => {
+    ' clicks on \'Sign In\'', fakeAsync(() => {
     spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
 
     expect(mockWindowRef.nativeWindow.location.href).toBe('');
@@ -442,17 +445,11 @@ describe('TopNavigationBarComponent', () => {
         clientHeight: 61
       });
 
-    component.ngOnInit();
-
-    // The first element is hidden and then truncate navbar is called again, to
-    // hide the next element if necessary.
-    expect(component.navElementsVisibilityStatus[donateElement])
-      .toBe(true);
+    component.navElementsVisibilityStatus[donateElement] = true;
 
     component.truncateNavbar();
 
     expect(component.navElementsVisibilityStatus[donateElement])
       .toBe(false);
-    component.ngOnDestroy();
   });
 });
