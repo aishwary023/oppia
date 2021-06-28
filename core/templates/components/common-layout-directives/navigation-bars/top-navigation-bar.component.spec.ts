@@ -154,6 +154,7 @@ describe('TopNavigationBarComponent', () => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
     spyOn(wds, 'isWindowNarrow').and.returnValue(true);
+    spyOn(component, 'truncateNavbar').and.stub();
 
     expect(component.currentUrl).toBe(undefined);
     expect(component.labelForClearingFocus).toBe(undefined);
@@ -186,6 +187,8 @@ describe('TopNavigationBarComponent', () => {
   it('should get user info on initialization', fakeAsync(() => {
     spyOn(cbas, 'fetchClassroomPromosAreEnabledStatusAsync')
       .and.resolveTo(true);
+    spyOn(component, 'truncateNavbar').and.stub();
+
 
     expect(component.isModerator).toBe(undefined);
     expect(component.isAdmin).toBe(undefined);
@@ -212,7 +215,7 @@ describe('TopNavigationBarComponent', () => {
     let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
     spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
       mockOnSearchBarLoadedEventEmitter);
-    spyOn(component, 'truncateNavbar');
+    spyOn(component, 'truncateNavbar').and.stub();
 
     component.ngOnInit();
     mockOnSearchBarLoadedEventEmitter.emit();
@@ -227,8 +230,10 @@ describe('TopNavigationBarComponent', () => {
   it('should try displaying the hidden navbar elements if resized' +
     ' window is larger', waitForAsync(() => {
     let donateElement = 'I18N_TOPNAV_DONATE';
-    component.ngOnInit();
+    spyOn(component, 'truncateNavbar').and.stub();
     spyOn(debouncerService, 'debounce').and.stub();
+
+    component.ngOnInit();
 
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
@@ -243,8 +248,10 @@ describe('TopNavigationBarComponent', () => {
 
   it('should show user\'s profile picture on initialization', fakeAsync(() => {
     expect(component.profilePictureDataUrl).toBe(undefined);
+
     spyOn(userService, 'getProfileImageDataUrlAsync').and.resolveTo(
       '/profile-picture/user1.jpg');
+    spyOn(debouncerService, 'debounce').and.stub();
 
     component.ngOnInit();
     tick();
@@ -442,27 +449,11 @@ describe('TopNavigationBarComponent', () => {
         clientHeight: 61
       });
 
-    component.ngOnInit();
-
-    // The first element is hidden and then truncate navbar is called again, to
-    // hide the next element if necessary.
-    expect(component.navElementsVisibilityStatus[donateElement])
-      .toBe(true);
+    component.navElementsVisibilityStatus[donateElement] = true;
 
     component.truncateNavbar();
 
     expect(component.navElementsVisibilityStatus[donateElement])
       .toBe(false);
-  });
-
-  it('should unsubscribe when component is destroyed', function() {
-    spyOn(component.directiveSubscriptions, 'unsubscribe').and.callThrough();
-
-    expect(component.directiveSubscriptions.closed).toBe(false);
-
-    component.ngOnDestroy();
-
-    expect(component.directiveSubscriptions.unsubscribe).toHaveBeenCalled();
-    expect(component.directiveSubscriptions.closed).toBe(true);
   });
 });
