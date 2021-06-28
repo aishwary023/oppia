@@ -76,8 +76,8 @@ describe('TopNavigationBarComponent', () => {
   let debouncerService: DebouncerService;
   let sidebarStatusService: SidebarStatusService;
 
-  let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
-  let mockResizeEmitter = new EventEmitter();
+  let mockOnSearchBarLoadedEventEmitter: EventEmitter<void>;
+  let mockResizeEmitter: EventEmitter<void>;
 
   let userInfo = {
     _isModerator: true,
@@ -101,6 +101,8 @@ describe('TopNavigationBarComponent', () => {
   };
 
   beforeEach(waitForAsync(() => {
+    mockOnSearchBarLoadedEventEmitter = new EventEmitter();
+    mockResizeEmitter = new EventEmitter();
     mockWindowRef = new MockWindowRef();
     TestBed.configureTestingModule({
       imports: [
@@ -146,6 +148,10 @@ describe('TopNavigationBarComponent', () => {
     spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
     spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
       mockOnSearchBarLoadedEventEmitter);
+  });
+
+  afterEach(() => {
+    component.ngOnDestroy();
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
