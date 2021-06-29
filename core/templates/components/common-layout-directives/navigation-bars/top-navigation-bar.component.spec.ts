@@ -147,6 +147,10 @@ describe('TopNavigationBarComponent', () => {
     debouncerService = TestBed.inject(DebouncerService);
     sidebarStatusService = TestBed.inject(SidebarStatusService);
     urlInterpolationService = TestBed.inject(UrlInterpolationService);
+
+    spyOn(searchService, 'onSearchBarLoaded')
+      .and.returnValue(new EventEmitter<string>());
+    spyOn(wds, 'getResizeEvent').and.returnValue(new EventEmitter());
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
@@ -186,8 +190,6 @@ describe('TopNavigationBarComponent', () => {
     });
     expect(component.profilePictureDataUrl).toBe('/profile/picture');
     expect(component.CLASSROOM_PROMOS_ARE_ENABLED).toBe(true);
-
-    component.ngOnDestroy();
   }));
 
   it('should get user info on initialization', fakeAsync(() => {
@@ -214,19 +216,14 @@ describe('TopNavigationBarComponent', () => {
     expect(component.userIsLoggedIn).toBe(true);
     expect(component.username).toBe('username1');
     expect(component.profilePageUrl).toBe('/profile/username1');
-
-    component.ngOnDestroy();
   }));
 
   it('should truncate navbar after search bar is loaded', fakeAsync(() => {
-    let mockOnSearchBarLoadedEventEmitter = new EventEmitter();
-    spyOnProperty(searchService, 'onSearchBarLoaded').and.returnValue(
-      mockOnSearchBarLoadedEventEmitter);
     spyOn(component, 'truncateNavbar').and.stub();
 
     component.ngOnInit();
 
-    mockOnSearchBarLoadedEventEmitter.emit();
+    searchService.onSearchBarLoaded.emit();
     tick(101);
 
     expect(component.truncateNavbar).toHaveBeenCalled();
@@ -245,7 +242,8 @@ describe('TopNavigationBarComponent', () => {
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
 
-    mockResizeEmitter.emit();
+    // @ts-expect-error
+    wds.getResizeEvent().emit();
     tick();
 
     expect(component.navElementsVisibilityStatus[donateElement]).toBe(true);
@@ -425,37 +423,48 @@ describe('TopNavigationBarComponent', () => {
     expect(document.querySelector).not.toHaveBeenCalled();
   });
 
-  // it('should hide navbar if it\'s height more than 60px', fakeAsync(() => {
-  //   spyOn(wds, isWindow)
-  //   spyOn(document, 'querySelector')
-  //   // This throws "Type '{ clientWidth: number; }' is missing the following
-  //   // properties from type 'Element': assignedSlot, attributes, classList,
-  //   // className, and 122 more.". We need to suppress this error because
-  //   // typescript expects around 120 more properties than just one
-  //   // (clientWidth). We need only one 'clientWidth' for
-  //   // testing purposes.
-  //   // @ts-expect-error
-  //     .withArgs('div.collapse.navbar-collapse').and.returnValue({
-  //       clientHeight: 61
-  //     });
+  it('should retry calling truncate navbar if i18n is not complete', () => {
+    spyOn(wds, 'isWindowNarrow').and.returnValues(false, true);
+    spyOn(document, 'querySelector').and.stub();
 
-  //   component.navElementsVisibilityStatus = {
-  //     'I18N_TOPNAV_DONATE': true,
-  //     'I18N_TOPNAV_CLASSROOM': true,
-  //     'I18N_TOPNAV_ABOUT': true,
-  //     'I18N_CREATE_EXPLORATION_CREATE': true,
-  //     'I18N_TOPNAV_LIBRARY': true
-  //   };
+    component.checkIfI18NCompleted = null;
 
-  //   component.truncateNavbar();
-  //   tick();
+    component.truncateNavbar();
 
-  //   expect(component.navElementsVisibilityStatus).toEqual({
-  //     'I18N_TOPNAV_DONATE': false,
-  //     'I18N_TOPNAV_CLASSROOM': true,
-  //     'I18N_TOPNAV_ABOUT': true,
-  //     'I18N_CREATE_EXPLORATION_CREATE': true,
-  //     'I18N_TOPNAV_LIBRARY': true
-  //   });
-  // }));
+    expect(document.querySelector).not.toHaveBeenCalled();
+  });
+
+  it('should hide navbar if it\'s height more than 60px', fakeAsync(() => {
+    spyOn(wds, 'isWindowNarrow').and.returnValues(false, true);
+    spyOn(document, 'querySelector')
+    // This throws "Type '{ clientWidth: number; }' is missing the following
+    // properties from type 'Element': assignedSlot, attributes, classList,
+    // className, and 122 more.". We need to suppress this error because
+    // typescript expects around 120 more properties than just one
+    // (clientWidth). We need only one 'clientWidth' for
+    // testing purposes.
+    // @ts-expect-error
+      .withArgs('div.collapse.navbar-collapse').and.returnValue({
+        clientHeight: 61
+      });
+
+    component.navElementsVisibilityStatus = {
+      'I18N_TOPNAV_DONATE': true,
+      'I18N_TOPNAV_CLASSROOM': true,
+      'I18N_TOPNAV_ABOUT': true,
+      'I18N_CREATE_EXPLORATION_CREATE': true,
+      'I18N_TOPNAV_LIBRARY': true
+    };
+
+    component.truncateNavbar();
+    tick(51);
+
+    expect(component.navElementsVisibilityStatus).toEqual({
+      'I18N_TOPNAV_DONATE': false,
+      'I18N_TOPNAV_CLASSROOM': true,
+      'I18N_TOPNAV_ABOUT': true,
+      'I18N_CREATE_EXPLORATION_CREATE': true,
+      'I18N_TOPNAV_LIBRARY': true
+    });
+  }));
 });
