@@ -410,20 +410,20 @@ describe('TopNavigationBarComponent', () => {
     expect(component.checkIfI18NCompleted()).toBe(true);
   });
 
-  // it('should not truncate navbar if the window is narrow', () => {
-  //   // The truncateNavbar() function returns, as soon as the check for
-  //   // narrow window passes.
-  //   spyOn(wds, 'isWindowNarrow').and.returnValue(true);
-  //   spyOn(component, 'checkIfI18NCompleted');
-  //   spyOn(document, 'querySelector');
+  it('should not truncate navbar if the window is narrow', () => {
+    // The truncateNavbar() function returns, as soon as the check for
+    // narrow window passes.
+    spyOn(wds, 'isWindowNarrow').and.returnValue(true);
+    spyOn(component, 'checkIfI18NCompleted');
+    spyOn(document, 'querySelector');
 
-  //   // We also, check if the subsequent function calls have been made or not,
-  //   // thus confirming that the returned 'undefined' value is because of
-  //   // narrow window.
-  //   expect(component.truncateNavbar()).toBe(undefined);
-  //   expect(component.checkIfI18NCompleted).not.toHaveBeenCalled();
-  //   expect(document.querySelector).not.toHaveBeenCalled();
-  // });
+    // We also, check if the subsequent function calls have been made or not,
+    // thus confirming that the returned 'undefined' value is because of
+    // narrow window.
+    expect(component.truncateNavbar()).toBe(undefined);
+    expect(component.checkIfI18NCompleted).not.toHaveBeenCalled();
+    expect(document.querySelector).not.toHaveBeenCalled();
+  });
 
   // it('should hide navbar if it\'s height more than 60px', fakeAsync(() => {
   //   spyOn(wds, isWindow)
