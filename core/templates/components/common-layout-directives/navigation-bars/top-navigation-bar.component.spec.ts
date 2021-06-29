@@ -386,29 +386,29 @@ describe('TopNavigationBarComponent', () => {
       .toHaveBeenCalled();
   });
 
-  // it('should check if i18n has been run', () => {
-  //   spyOn(document, 'querySelectorAll')
-  //     .withArgs('.oppia-navbar-tab-content').and.returnValues(
-  //       [
-  //         {
-  //           // This throws "Type '{ innerText: string; }' is not assignable to
-  //           // type 'Element'.". We need to suppress this error because if i18n
-  //           // has not run, then the tabs will not have text content and so
-  //           // their innerText.length value will be 0.
-  //           // @ts-expect-error
-  //           innerText: ''
-  //         }
-  //       ],
-  //       [
-  //         {
-  //           innerText: 'About'
-  //         }
-  //       ]
-  //     );
+  it('should check if i18n has been run', () => {
+    spyOn(document, 'querySelectorAll')
+      .withArgs('.oppia-navbar-tab-content').and.returnValues(
+        [
+          {
+            // This throws "Type '{ innerText: string; }' is not assignable to
+            // type 'Element'.". We need to suppress this error because if i18n
+            // has not run, then the tabs will not have text content and so
+            // their innerText.length value will be 0.
+            // @ts-expect-error
+            innerText: ''
+          }
+        ],
+        [
+          {
+            innerText: 'About'
+          }
+        ]
+      );
 
-  //   expect(component.checkIfI18NCompleted()).toBe(false);
-  //   expect(component.checkIfI18NCompleted()).toBe(true);
-  // });
+    expect(component.checkIfI18NCompleted()).toBe(false);
+    expect(component.checkIfI18NCompleted()).toBe(true);
+  });
 
   // it('should not truncate navbar if the window is narrow', () => {
   //   // The truncateNavbar() function returns, as soon as the check for
