@@ -64,7 +64,7 @@ class MockWindowRef {
   }
 }
 
-describe('TopNavigationBarComponent', () => {
+fdescribe('TopNavigationBarComponent', () => {
   let fixture: ComponentFixture<TopNavigationBarComponent>;
   let component: TopNavigationBarComponent;
   let mockWindowRef: MockWindowRef;
@@ -150,7 +150,6 @@ describe('TopNavigationBarComponent', () => {
 
     spyOn(searchService, 'onSearchBarLoaded')
       .and.returnValue(new EventEmitter<string>());
-    spyOn(wds, 'getResizeEvent').and.returnValue(new EventEmitter());
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
@@ -227,8 +226,6 @@ describe('TopNavigationBarComponent', () => {
     tick(101);
 
     expect(component.truncateNavbar).toHaveBeenCalled();
-
-    component.ngOnDestroy();
   }));
 
   it('should try displaying the hidden navbar elements if resized' +
@@ -242,13 +239,10 @@ describe('TopNavigationBarComponent', () => {
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
 
-    // @ts-expect-error
-    wds.getResizeEvent().emit();
+    mockResizeEmitter.emit();
     tick();
 
     expect(component.navElementsVisibilityStatus[donateElement]).toBe(true);
-
-    component.ngOnDestroy();
   }));
 
   it('should show Oppia\'s logos', () => {
