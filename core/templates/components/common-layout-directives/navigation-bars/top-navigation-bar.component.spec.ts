@@ -341,51 +341,50 @@ fdescribe('TopNavigationBarComponent', () => {
     expect(navigationService.closeSubmenu).not.toHaveBeenCalled();
   });
 
-  // it('should handle keydown events on menus', () => {
-  //   let keydownEvent = new KeyboardEvent('click', {
-  //     shiftKey: true,
-  //     keyCode: 9
-  //   });
+  it('should handle keydown events on menus', () => {
+    let keydownEvent = new KeyboardEvent('click', {
+      shiftKey: true,
+      keyCode: 9
+    });
 
-  //   expect(component.activeMenuName).toBe(undefined);
+    expect(component.activeMenuName).toBe(undefined);
 
-  //   component.onMenuKeypress(keydownEvent, 'aboutMenu', {
-  //     shiftTab: 'open',
-  //   });
+    component.onMenuKeypress(keydownEvent, 'aboutMenu', {
+      shiftTab: 'open',
+    });
 
-  //   expect(component.activeMenuName).toBe('aboutMenu');
-  // });
+    expect(component.activeMenuName).toBe('aboutMenu');
+  });
 
-  // it('should toggle side bar', () => {
-  //   spyOn(sidebarStatusService, 'isSidebarShown').and.returnValues(false, true);
-  //   spyOn(wds, 'isWindowNarrow').and.returnValue(true);
-  //   expect(component.isSidebarShown()).toBe(false);
+  it('should toggle side bar', () => {
+    spyOn(sidebarStatusService, 'isSidebarShown').and.returnValues(false, true);
+    spyOn(wds, 'isWindowNarrow').and.returnValue(true);
+    expect(component.isSidebarShown()).toBe(false);
 
-  //   component.toggleSidebar();
+    component.toggleSidebar();
 
-  //   expect(component.isSidebarShown()).toBe(true);
-  // });
+    expect(component.isSidebarShown()).toBe(true);
+  });
 
-  // it('should navigate to classroom page when user clicks' +
-  //   ' on \'Basic Mathematics\'', fakeAsync(() => {
-  //   expect(mockWindowRef.nativeWindow.location.href).toBe('');
+  it('should navigate to classroom page when user clicks' +
+    ' on \'Basic Mathematics\'', fakeAsync(() => {
+    expect(mockWindowRef.nativeWindow.location.href).toBe('');
 
-  //   component.navigateToClassroomPage('/classroom/url');
-  //   tick(151);
-  //   flushMicrotasks();
+    component.navigateToClassroomPage('/classroom/url');
+    tick(151);
 
-  //   expect(mockWindowRef.nativeWindow.location.href).toBe('/classroom/url');
-  // }));
+    expect(mockWindowRef.nativeWindow.location.href).toBe('/classroom/url');
+  }));
 
-  // it('should registers classroom header click event when user clicks' +
-  //   ' on \'Basic Mathematics\'', () => {
-  //   spyOn(siteAnalyticsService, 'registerClassroomHeaderClickEvent');
+  it('should registers classroom header click event when user clicks' +
+    ' on \'Basic Mathematics\'', () => {
+    spyOn(siteAnalyticsService, 'registerClassroomHeaderClickEvent');
 
-  //   component.navigateToClassroomPage('/classroom/url');
+    component.navigateToClassroomPage('/classroom/url');
 
-  //   expect(siteAnalyticsService.registerClassroomHeaderClickEvent)
-  //     .toHaveBeenCalled();
-  // });
+    expect(siteAnalyticsService.registerClassroomHeaderClickEvent)
+      .toHaveBeenCalled();
+  });
 
   // it('should check if i18n has been run', () => {
   //   spyOn(document, 'querySelectorAll')
