@@ -237,8 +237,10 @@ fdescribe('TopNavigationBarComponent', () => {
   it('should try displaying the hidden navbar elements if resized' +
     ' window is larger', fakeAsync(() => {
     let donateElement = 'I18N_TOPNAV_DONATE';
-    component.ngOnInit();
+    spyOn(component, 'truncateNavbar').and.stub();
     spyOn(debouncerService, 'debounce').and.stub();
+
+    component.ngOnInit();
 
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
@@ -251,96 +253,93 @@ fdescribe('TopNavigationBarComponent', () => {
     component.ngOnDestroy();
   }));
 
-  // it('should show Oppia\'s logos', () => {
-  //   expect(component.getStaticImageUrl('/logo/288x128_logo_white.webp'))
-  //     .toBe('/assets/images/logo/288x128_logo_white.webp');
+  it('should show Oppia\'s logos', () => {
+    expect(component.getStaticImageUrl('/logo/288x128_logo_white.webp'))
+      .toBe('/assets/images/logo/288x128_logo_white.webp');
 
-  //   expect(component.getStaticImageUrl('/logo/288x128_logo_white.png'))
-  //     .toBe('/assets/images/logo/288x128_logo_white.png');
-  // });
+    expect(component.getStaticImageUrl('/logo/288x128_logo_white.png'))
+      .toBe('/assets/images/logo/288x128_logo_white.png');
+  });
 
-  // it('should fetch login URL and redirect user to login page when user' +
-  //   ' clicks on \'Sign In\'', fakeAsync((done) => {
-  //   spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
+  it('should fetch login URL and redirect user to login page when user' +
+    ' clicks on \'Sign In\'', fakeAsync(() => {
+    spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
 
-  //   expect(mockWindowRef.nativeWindow.location.href).toBe('');
+    expect(mockWindowRef.nativeWindow.location.href).toBe('');
 
-  //   component.onLoginButtonClicked();
-  //   flushMicrotasks();
-  //   tick(151);
+    component.onLoginButtonClicked();
+    tick(151);
 
-  //   expect(mockWindowRef.nativeWindow.location.href).toBe('/login/url');
-  // }));
+    expect(mockWindowRef.nativeWindow.location.href).toBe('/login/url');
+  }));
 
-  // it('should reload window if fetched login URL is null', fakeAsync(() => {
-  //   spyOn(userService, 'getLoginUrlAsync').and.resolveTo('');
-  //   spyOn(mockWindowRef.nativeWindow.location, 'reload');
+  it('should reload window if fetched login URL is null', fakeAsync(() => {
+    spyOn(userService, 'getLoginUrlAsync').and.resolveTo('');
+    spyOn(mockWindowRef.nativeWindow.location, 'reload');
 
-  //   expect(mockWindowRef.nativeWindow.location.href).toBe('');
+    expect(mockWindowRef.nativeWindow.location.href).toBe('');
 
-  //   component.onLoginButtonClicked();
-  //   flushMicrotasks();
-  //   tick(151);
+    component.onLoginButtonClicked();
+    tick(151);
 
-  //   expect(mockWindowRef.nativeWindow.location.reload).toHaveBeenCalled();
-  // }));
+    expect(mockWindowRef.nativeWindow.location.reload).toHaveBeenCalled();
+  }));
 
-  // it('should register start login event when user is being redirected to' +
-  //   ' the login page', fakeAsync(() => {
-  //   spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
-  //   spyOn(siteAnalyticsService, 'registerStartLoginEvent');
+  it('should register start login event when user is being redirected to' +
+    ' the login page', fakeAsync(() => {
+    spyOn(userService, 'getLoginUrlAsync').and.resolveTo('/login/url');
+    spyOn(siteAnalyticsService, 'registerStartLoginEvent');
 
-  //   component.onLoginButtonClicked();
-  //   flushMicrotasks();
-  //   tick(151);
+    component.onLoginButtonClicked();
+    tick(151);
 
-  //   expect(siteAnalyticsService.registerStartLoginEvent).toHaveBeenCalledWith(
-  //     'loginButton');
-  // }));
+    expect(siteAnalyticsService.registerStartLoginEvent).toHaveBeenCalledWith(
+      'loginButton');
+  }));
 
-  // it('should clear last uploaded audio language on logout', () => {
-  //   spyOn(mockWindowRef.nativeWindow.localStorage, 'removeItem');
+  it('should clear last uploaded audio language on logout', () => {
+    spyOn(mockWindowRef.nativeWindow.localStorage, 'removeItem');
 
-  //   expect(mockWindowRef.nativeWindow.localStorage.last_uploaded_audio_lang)
-  //     .toBe('en');
+    expect(mockWindowRef.nativeWindow.localStorage.last_uploaded_audio_lang)
+      .toBe('en');
 
-  //   component.onLogoutButtonClicked();
+    component.onLogoutButtonClicked();
 
-  //   expect(mockWindowRef.nativeWindow.localStorage.removeItem)
-  //     .toHaveBeenCalledWith('last_uploaded_audio_lang');
-  // });
+    expect(mockWindowRef.nativeWindow.localStorage.removeItem)
+      .toHaveBeenCalledWith('last_uploaded_audio_lang');
+  });
 
-  // it('should open submenu when user hovers over the menu button', () => {
-  //   let mouseoverEvent = new KeyboardEvent('mouseover');
-  //   spyOn(navigationService, 'openSubmenu');
-  //   spyOn(deviceInfoService, 'isMobileDevice').and.returnValue(false);
+  it('should open submenu when user hovers over the menu button', () => {
+    let mouseoverEvent = new KeyboardEvent('mouseover');
+    spyOn(navigationService, 'openSubmenu');
+    spyOn(deviceInfoService, 'isMobileDevice').and.returnValue(false);
 
-  //   component.openSubmenu(mouseoverEvent, 'classroomMenu');
+    component.openSubmenu(mouseoverEvent, 'classroomMenu');
 
-  //   expect(navigationService.openSubmenu).toHaveBeenCalledWith(
-  //     mouseoverEvent, 'classroomMenu');
-  // });
+    expect(navigationService.openSubmenu).toHaveBeenCalledWith(
+      mouseoverEvent, 'classroomMenu');
+  });
 
-  // it('should close submenu when user moves the mouse away' +
-  //   ' from the menu button', () => {
-  //   let mouseleaveEvent = new KeyboardEvent('mouseleave');
-  //   spyOn(navigationService, 'closeSubmenu');
-  //   spyOn(deviceInfoService, 'isMobileDevice').and.returnValue(false);
+  it('should close submenu when user moves the mouse away' +
+    ' from the menu button', () => {
+    let mouseleaveEvent = new KeyboardEvent('mouseleave');
+    spyOn(navigationService, 'closeSubmenu');
+    spyOn(deviceInfoService, 'isMobileDevice').and.returnValue(false);
 
-  //   component.closeSubmenuIfNotMobile(mouseleaveEvent);
+    component.closeSubmenuIfNotMobile(mouseleaveEvent);
 
-  //   expect(navigationService.closeSubmenu).toHaveBeenCalledWith(
-  //     mouseleaveEvent);
-  // });
+    expect(navigationService.closeSubmenu).toHaveBeenCalledWith(
+      mouseleaveEvent);
+  });
 
-  // it('should not close the submenu is the user is on a mobile device', () =>{
-  //   spyOn(deviceInfoService, 'isMobileDevice').and.returnValue(true);
-  //   spyOn(navigationService, 'closeSubmenu');
+  it('should not close the submenu is the user is on a mobile device', () =>{
+    spyOn(deviceInfoService, 'isMobileDevice').and.returnValue(true);
+    spyOn(navigationService, 'closeSubmenu');
 
-  //   component.closeSubmenuIfNotMobile(new KeyboardEvent('mouseleave'));
+    component.closeSubmenuIfNotMobile(new KeyboardEvent('mouseleave'));
 
-  //   expect(navigationService.closeSubmenu).not.toHaveBeenCalled();
-  // });
+    expect(navigationService.closeSubmenu).not.toHaveBeenCalled();
+  });
 
   // it('should handle keydown events on menus', () => {
   //   let keydownEvent = new KeyboardEvent('click', {
