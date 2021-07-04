@@ -65,7 +65,7 @@ class MockWindowRef {
 }
 
 
-describe('TopNavigationBarComponent', () => {
+fdescribe('TopNavigationBarComponent', () => {
   let fixture: ComponentFixture<TopNavigationBarComponent>;
   let component: TopNavigationBarComponent;
   let mockWindowRef: MockWindowRef;
@@ -148,9 +148,6 @@ describe('TopNavigationBarComponent', () => {
     debouncerService = TestBed.inject(DebouncerService);
     sidebarStatusService = TestBed.inject(SidebarStatusService);
     urlInterpolationService = TestBed.inject(UrlInterpolationService);
-
-    spyOn(searchService, 'onSearchBarLoaded')
-      .and.returnValue(new EventEmitter<string>());
   });
 
   it('should set component properties on initialization', fakeAsync(() => {
@@ -160,6 +157,9 @@ describe('TopNavigationBarComponent', () => {
       .and.resolveTo(true);
     spyOn(wds, 'isWindowNarrow').and.returnValue(true);
     spyOn(component, 'truncateNavbar').and.stub();
+    spyOn(urlInterpolationService, 'interpolateUrl')
+      .and.returnValue('/profile/username1');
+    spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
 
     expect(component.currentUrl).toBe(undefined);
     expect(component.labelForClearingFocus).toBe(undefined);
@@ -170,9 +170,16 @@ describe('TopNavigationBarComponent', () => {
     expect(component.navElementsVisibilityStatus).toEqual({});
     expect(component.profilePictureDataUrl).toBe(undefined);
     expect(component.CLASSROOM_PROMOS_ARE_ENABLED).toBe(false);
+    expect(component.isModerator).toBe(undefined);
+    expect(component.isAdmin).toBe(undefined);
+    expect(component.isTopicManager).toBe(undefined);
+    expect(component.isSuperAdmin).toBe(undefined);
+    expect(component.userIsLoggedIn).toBe(undefined);
+    expect(component.username).toBe(undefined);
+    expect(component.profilePageUrl).toBe(undefined);
 
     component.ngOnInit();
-    tick(10);
+    tick(0);
 
     fixture.whenStable().then(() => {
       expect(component.currentUrl).toBe('learn');
@@ -191,27 +198,6 @@ describe('TopNavigationBarComponent', () => {
       });
       expect(component.profilePictureDataUrl).toBe('/profile/picture');
       expect(component.CLASSROOM_PROMOS_ARE_ENABLED).toBe(true);
-    });
-  }));
-
-  it('should get user info on initialization', fakeAsync(() => {
-    spyOn(userService, 'getUserInfoAsync').and.resolveTo(userInfo);
-    spyOn(urlInterpolationService, 'interpolateUrl')
-      .and.returnValue('/profile/username1');
-    spyOn(component, 'truncateNavbar').and.stub();
-
-    expect(component.isModerator).toBe(undefined);
-    expect(component.isAdmin).toBe(undefined);
-    expect(component.isTopicManager).toBe(undefined);
-    expect(component.isSuperAdmin).toBe(undefined);
-    expect(component.userIsLoggedIn).toBe(undefined);
-    expect(component.username).toBe(undefined);
-    expect(component.profilePageUrl).toBe(undefined);
-
-    component.ngOnInit();
-    tick(10);
-
-    fixture.whenStable().then(() => {
       expect(component.isModerator).toBe(true);
       expect(component.isAdmin).toBe(false);
       expect(component.isTopicManager).toBe(false);
@@ -223,10 +209,12 @@ describe('TopNavigationBarComponent', () => {
   }));
 
   it('should truncate navbar after search bar is loaded', fakeAsync(() => {
+    spyOn(searchService, 'onSearchBarLoaded')
+      .and.returnValue(new EventEmitter<string>());
     spyOn(component, 'truncateNavbar').and.stub();
 
     component.ngOnInit();
-    tick(10);
+    tick(0);
 
     searchService.onSearchBarLoaded.emit();
     tick(101);
@@ -243,7 +231,7 @@ describe('TopNavigationBarComponent', () => {
     spyOn(debouncerService, 'debounce').and.stub();
 
     component.ngOnInit();
-    tick(10);
+    tick(0);
 
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
