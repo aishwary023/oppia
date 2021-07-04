@@ -116,7 +116,6 @@ describe('TopNavigationBarComponent', () => {
         MockTranslatePipe
       ],
       providers: [
-        NavigationService,
         UserService,
         {
           provide: WindowRef,
@@ -179,7 +178,7 @@ describe('TopNavigationBarComponent', () => {
     expect(component.profilePageUrl).toBe(undefined);
 
     component.ngOnInit();
-    tick(0);
+    tick();
 
     fixture.whenStable().then(() => {
       expect(component.currentUrl).toBe('learn');
@@ -214,7 +213,7 @@ describe('TopNavigationBarComponent', () => {
     spyOn(component, 'truncateNavbar').and.stub();
 
     component.ngOnInit();
-    tick(0);
+    tick();
 
     searchService.onSearchBarLoaded.emit();
     tick(101);
@@ -231,7 +230,7 @@ describe('TopNavigationBarComponent', () => {
     spyOn(debouncerService, 'debounce').and.stub();
 
     component.ngOnInit();
-    tick(0);
+    tick();
 
     component.currentWindowWidth = 600;
     component.navElementsVisibilityStatus[donateElement] = false;
